@@ -4,3 +4,18 @@ cache/
 .env
 broadcast/
 node_modules/
+
+# Remix compiler artifacts
+**/artifacts/
+**/artifacts/**
+
+# Remix plugin state folders
+deps/
+states/
+
+# Debug info
+*.dbg.json
+*.tsbuildinfo
+
+# Optional
+.env.local
