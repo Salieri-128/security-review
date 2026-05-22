@@ -15,15 +15,18 @@ learning summaries as I build a more systematic understanding of Web3 security.
 
 ## Contents
 
-At this stage, the repository is a learning workspace. As it grows, it may include:
+At this stage, the repository is organized around a personal security knowledge base:
 
-- Audit reports and practice findings
-- Notes from Cyfrin Updraft lessons
-- Vulnerability case studies
-- Review checklists and methodology notes
+- `notes/concepts/`: core Solidity, EVM, and security concepts
+- `notes/vulnerabilities/`: root causes, exploit paths, impact, and mitigation notes
+- `notes/audit-methodology/`: review workflow, checklists, severity, and findings
+- `notes/foundry/`: Foundry usage, fuzz testing, invariant testing, and cheatcodes
+- `notes/evm/`: EVM execution, storage, memory, calldata, and low-level behavior
+- `notes/defi/`: DeFi primitives, accounting models, and protocol risk patterns
+- `notes/attack-patterns/`: reusable attacker playbooks and exploit ideas
+- `notes/resources/`: useful references, tools, articles, and papers
 
 ## Status
 
 This is an active learning repository. The structure and content will evolve as I
 complete more review exercises and organize my notes.
-
