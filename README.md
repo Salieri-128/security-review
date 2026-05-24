@@ -14,8 +14,10 @@ learning summaries as I build a more systematic understanding of Web3 security.
 - Develop repeatable review habits for Solidity codebases.
 
 ## Contents
+### case-studies
+- my diffrent audit works including findings and pocs(in the finding md)
 
-At this stage, the repository is organized around a personal security knowledge base:
+### notes
 
 - `notes/concepts/`: core Solidity, EVM, and security concepts
 - `notes/vulnerabilities/`: root causes, exploit paths, impact, and mitigation notes
@@ -26,7 +28,8 @@ At this stage, the repository is organized around a personal security knowledge 
 - `notes/attack-patterns/`: reusable attacker playbooks and exploit ideas
 - `notes/resources/`: useful references, tools, articles, and papers
 
+
 ## Status
 
-This is an active learning repository. The structure and content will evolve as I
+This is an active learning and work portfolio repository. The structure and content will evolve as I
 complete more review exercises and organize my notes.
