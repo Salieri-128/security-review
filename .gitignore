@@ -4,6 +4,7 @@ cache/
 .env
 broadcast/
 node_modules/
+cyfrin/
 
 # Remix compiler artifacts
 **/artifacts/
