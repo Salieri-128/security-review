@@ -1,0 +1,108 @@
+# Foundry Test: Address, Balance, Sender
+
+## 一句话理解
+
+Foundry 测试里要分清三件事：谁是地址、谁有钱、谁在调用函数。
+
+## makeAddr
+
+`makeAddr("name")` 用来生成一个固定的测试地址。
+
+```solidity
+address attacker = makeAddr("attacker");
+```
+
+它只是一个地址，不是合约，也不会自动有 ETH。Foundry 会给它加 label，所以 trace 里更容易看懂。
+
+## vm.deal
+
+`vm.deal(address, amount)` 用来设置某个地址的 ETH 余额。
+
+```solidity
+vm.deal(attacker, 2 ether);
+```
+
+注意：给谁 `deal`，谁才有钱。给 `attackerAddress` 钱，不代表攻击合约地址也有钱。
+
+## vm.prank
+
+`vm.prank(address)` 只影响下一次外部调用的 `msg.sender`。
+
+```solidity
+vm.prank(attackerAddress);
+attacker.attack{value: 1 ether}();
+```
+
+在 `attack()` 里面：
+
+```solidity
+msg.sender == attackerAddress;
+```
+
+如果要连续伪装多次调用，用：
+
+```solidity
+vm.startPrank(attackerAddress);
+// calls
+vm.stopPrank();
+```
+
+## 测试合约本身也有余额
+
+测试合约通常长这样：
+
+```solidity
+contract PuppyRaffleTest is Test {}
+```
+
+在 Foundry 测试环境里，继承 `Test` 的测试合约默认有足够 ETH。所以测试合约可以直接发起带 `value` 的调用：
+
+```solidity
+puppyRaffle.enterRaffle{value: entranceFee * 4}(players);
+```
+
+这里的钱来自测试合约，也就是 `address(this)`。
+
+## {value: ...} 的资金来源
+
+谁发起这次调用，钱就从谁的余额里扣。
+
+```solidity
+puppyRaffle.enterRaffle{value: 4 ether}(players);
+```
+
+如果这行代码由测试合约直接调用，资金流是：
+
+```text
+Test contract -4 ETH
+PuppyRaffle  +4 ETH
+```
+
+如果是外部用户调用攻击合约：
+
+```solidity
+vm.deal(attackerAddress, 2 ether);
+vm.prank(attackerAddress);
+attacker.attack{value: 1 ether}();
+```
+
+资金流是：
+
+```text
+attackerAddress          -1 ETH
+Attack contract address  +1 ETH
+```
+
+如果攻击合约内部再调用目标合约并附带 `value`，钱就从攻击合约余额里扣。
+
+## 速记
+
+- `makeAddr`: 造一个测试地址
+- `vm.deal`: 给某个地址设置 ETH 余额
+- `vm.prank`: 修改下一次调用的 `msg.sender`
+- `address(this)`: 当前测试合约地址
+- `{value: ...}`: 谁调用，钱从谁那里扣
+
+## 我的理解
+
+测试里最容易混的是“地址”和“合约余额”。`makeAddr` 只是造地址，`deal` 才是给余额，`prank` 只是换 `msg.sender`。当合约内部继续带 `value` 调用别的合约时，必须保证当前这个合约地址本身有钱。
