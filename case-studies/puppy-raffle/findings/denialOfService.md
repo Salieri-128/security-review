@@ -24,7 +24,7 @@ If we have 2 sets of 100 players enter, the gas costs will be as such:
 This is more than 3x more expensive for the second 100 players.
 ​
 <details>
-<summary>Proof of Code</summary>
+<summary>Code</summary>
 ​
 
 ```js

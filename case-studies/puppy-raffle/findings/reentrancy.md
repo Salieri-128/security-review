@@ -26,7 +26,7 @@ This can steal funds belonging to other raffle participants and prevent the raff
 The PoC in `cyfrin/4-puppy-raffle-audit/test/PuppyRaffleTest.t.sol` deploys an attacker contract, enters the raffle once, calls `refund`, and then re-enters `refund` from both `receive` and `fallback`.
 
 <details>
-<summary>Proof of Code</summary>
+<summary>Code</summary>
 
 ```js
 function testRefund_ReentrancyAttack() public {

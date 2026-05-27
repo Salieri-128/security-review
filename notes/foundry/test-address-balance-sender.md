@@ -47,6 +47,31 @@ vm.startPrank(attackerAddress);
 vm.stopPrank();
 ```
 
+## vm.expectRevert
+
+`vm.expectRevert()` 用来测试下一次调用应该 revert。
+
+```solidity
+vm.expectRevert();
+puppyRaffle.refund(0);
+```
+
+它要写在会 revert 的调用前面，并且只影响下一次调用。
+
+如果要检查具体错误信息：
+
+```solidity
+vm.expectRevert("PuppyRaffle: Only the player can refund");
+puppyRaffle.refund(0);
+```
+
+如果是 custom error，通常检查 selector：
+
+```solidity
+vm.expectRevert(MyContract.NotOwner.selector);
+myContract.onlyOwnerFunction();
+```
+
 ## 测试合约本身也有余额
 
 测试合约通常长这样：
@@ -100,9 +125,14 @@ Attack contract address  +1 ETH
 - `makeAddr`: 造一个测试地址
 - `vm.deal`: 给某个地址设置 ETH 余额
 - `vm.prank`: 修改下一次调用的 `msg.sender`
+- `vm.expectRevert`: 期待下一次调用 revert
 - `address(this)`: 当前测试合约地址
 - `{value: ...}`: 谁调用，钱从谁那里扣
 
 ## 我的理解
 
-测试里最容易混的是“地址”和“合约余额”。`makeAddr` 只是造地址，`deal` 才是给余额，`prank` 只是换 `msg.sender`。当合约内部继续带 `value` 调用别的合约时，必须保证当前这个合约地址本身有钱。
+测试里最容易混的是“地址”和“合约余额”。`makeAddr` 只是造地址，`deal` 才是给余额，`prank` 只是换 `msg.sender`。
+
+`expectRevert` 是提前告诉 Foundry：下一次调用 revert 才是正确结果。
+
+当合约内部继续带 `value` 调用别的合约时，必须保证当前这个合约地址本身有钱。

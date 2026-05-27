@@ -15,7 +15,7 @@ function setPassword(string memory newPassword) external {
 **Proof of Concept:** Add the following to the PasswordStore.t.sol test file:
 ​
 <details>
-<summary>code</summary>
+<summary>Code</summary>
 ```js
 function test_anyone_can_set_password(address randomAddress) public {
         vm.assume(randomAddress != owner);
