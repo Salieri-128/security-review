@@ -25,6 +25,20 @@ uint64 smallFee = uint64(fee);
 
 超过 `uint64` 能表示的范围，cast 后不会得到原来的 `20e18`，而是被截断成另一个值。
 
+## uint256 转 uint64 的直觉
+
+`uint256` 转成 `uint64` 时，可以理解成只保留最后 64 bits。
+
+高位数据会被丢掉，低 64 位留下来。
+
+数学效果类似：
+
+```text
+uint64(x) == x % 2^64
+```
+
+所以如果 `x` 大于 `type(uint64).max`，cast 后的值会变成一个更小的错误值。
+
 ## Puppy Raffle 里的问题
 
 ```solidity
