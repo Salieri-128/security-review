@@ -6,6 +6,8 @@ Storage 是合约的永久存储区，可以把它想成一个巨大的 key-valu
 
 每个 storage slot 是 32 bytes，slot 编号从 `0` 开始。合约的状态变量会按照声明顺序放进这些 slot 里。
 
+这篇只关注 storage slot layout。`memory`、`calldata`、`immutable`、`constant` 和 gas 对比见 `storage-immutable-constant-gas.md`。
+
 ## 基础规则
 
 ```solidity
@@ -25,16 +27,6 @@ contract Packed {
     uint128 b; // slot 0
     uint256 c; // slot 1
 }
-```
-
-## constant 和 immutable
-
-`constant` 和 `immutable` 通常不占用普通 storage slot。
-
-它们的值会被放进合约 bytecode 或在部署时写入代码相关的位置，而不是像普通状态变量一样存在 slot 里。
-
-```solidity
-uint256 public constant X = 123;
 ```
 
 ## 动态数组
@@ -132,20 +124,6 @@ keccak256(slot)
 
 - 短 `string` / `bytes`: 数据直接塞进自己的 slot
 - 长 `string` / `bytes`: slot 存长度标记，真实数据存在 `keccak256(slot)` 开始的位置
-
-## storage, memory, calldata
-
-状态变量存在 `storage`，会永久保存在链上。
-
-函数里的临时变量通常在 `memory` 或 stack 中，函数执行结束后就没了。
-
-动态类型作为函数参数或返回值时，经常需要显式写 `memory` 或 `calldata`，比如：
-
-```solidity
-function setName(string memory name) external {
-    // name is temporary memory data
-}
-```
 
 ## 审计时注意
 
