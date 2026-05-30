@@ -1,4 +1,4 @@
-### [S-#] Strict Balance Check in `PuppyRaffle::withdrawFees` Can Be Broken by Forced ETH
+### [M-1] Strict Balance Check in `PuppyRaffle::withdrawFees` Can Be Broken by Forced ETH
 
 **Description:** The `PuppyRaffle::withdrawFees` function requires the contract's ETH balance to be exactly equal to `totalFees` before allowing the fee address to withdraw.
 

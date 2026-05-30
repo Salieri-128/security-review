@@ -1,6 +1,6 @@
 ### [H-1] Denial of Service in the enterRaffle function
 
-**Description:** The `PuppyRaffle::enterRaffle` function loops through the `players` array to check for duplicates. However, the longer the `PuppyRaffle:players` array is, the more checks a new player will have to make. This means the gas costs for players who enter right when the raffle starts will be dramatically lower than those who enter later. Every additional address in the `players` array is an additional check the loop will have to make.
+**Description:** The `PuppyRaffle::enterRaffle` function loops through the `players` array to check for duplicates. However, the longer the `PuppyRaffle::players` array is, the more checks a new player will have to make. This means the gas costs for players who enter right when the raffle starts will be dramatically lower than those who enter later. Every additional address in the `players` array is an additional check the loop will have to make.
 ​
 ```javascript
 // @audit Dos Attack
@@ -11,9 +11,9 @@ for(uint256 i = 0; i < players.length -1; i++){
 }
 ```
 
-**Impact:** The gas consts for raffle entrants will greatly increase as more players enter the raffle, discouraging later users from entering and causing a rush at the start of a raffle to be one of the first entrants in queue.
+**Impact:** The gas costs for raffle entrants will greatly increase as more players enter the raffle, discouraging later users from entering and causing a rush at the start of a raffle to be one of the first entrants in queue.
 ​
-An attacker might make the `PuppyRaffle:entrants` array so big that no one else enters, guaranteeing themselves the win.
+An attacker might make the `PuppyRaffle::players` array so big that no one else enters, guaranteeing themselves the win.
 
 **Proof of Concept:**
 ​
@@ -77,21 +77,21 @@ function testDenialOfService() public {
     .
     function enterRaffle(address[] memory newPlayers) public payable {
         require(msg.value == entranceFee * newPlayers.length, "PuppyRaffle: Must send enough to enter raffle");
-        for (uint256 i = 0; i < newPlayers.length; i++) {
-            players.push(newPlayers[i]);
-+            addressToRaffleId[newPlayers[i]] = raffleId;
-        }
-​
+-        for (uint256 i = 0; i < newPlayers.length; i++) {
+-            players.push(newPlayers[i]);
+-        }
+-​
 -        // Check for duplicates
-+       // Check for duplicates only from the new players
-+       for (uint256 i = 0; i < newPlayers.length; i++) {
-+          require(addressToRaffleId[newPlayers[i]] != raffleId, "PuppyRaffle: Duplicate player");
-+       }
 -        for (uint256 i = 0; i < players.length; i++) {
 -            for (uint256 j = i + 1; j < players.length; j++) {
 -                require(players[i] != players[j], "PuppyRaffle: Duplicate player");
 -            }
 -        }
++       for (uint256 i = 0; i < newPlayers.length; i++) {
++          require(addressToRaffleId[newPlayers[i]] != raffleId, "PuppyRaffle: Duplicate player");
++          players.push(newPlayers[i]);
++          addressToRaffleId[newPlayers[i]] = raffleId;
++       }
         emit RaffleEnter(newPlayers);
     }
 .
