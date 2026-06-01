@@ -64,6 +64,8 @@ function f(string memory name) public pure {}
 function f(string calldata name) external {}
 ```
 
+这里的意思是：`name` 不会先被复制到 `memory`，函数会直接从 calldata 区域读取传入参数。
+
 特点：
 
 - 只读
@@ -72,6 +74,16 @@ function f(string calldata name) external {}
 - 常用于 external 函数的动态类型参数
 
 如果只是读取外部传入的数组、字符串、bytes，优先考虑 `calldata`。
+
+例如：
+
+```solidity
+function enterRaffle(address[] calldata players) external {
+    // read players directly from calldata
+}
+```
+
+如果函数里需要修改这个数组，就不能直接改 `calldata`，需要复制到 `memory`。
 
 ## Immutable
 
