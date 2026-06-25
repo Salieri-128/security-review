@@ -39,13 +39,41 @@ attacker.attack{value: 1 ether}();
 msg.sender == attackerAddress;
 ```
 
-如果要连续伪装多次调用，用：
+下一次调用结束后，`msg.sender` 就会恢复成原来的调用者。
+
+## vm.startPrank / vm.stopPrank
+
+如果要连续伪装多次调用，用 `vm.startPrank(address)` 和 `vm.stopPrank()`。
+
+`vm.startPrank(address)` 会让后续所有外部调用的 `msg.sender` 都变成这个地址，直到执行 `vm.stopPrank()`。
 
 ```solidity
 vm.startPrank(attackerAddress);
-// calls
+
+target.deposit(1 ether);
+target.withdraw(0.5 ether);
+target.claimReward();
+
 vm.stopPrank();
 ```
+
+在这三次调用里：
+
+```solidity
+msg.sender == attackerAddress;
+```
+
+这在需要同一个 user 连续执行多步操作时很常见，例如先 `approve`，再 `deposit`，最后 `withdraw`。
+
+```solidity
+vm.startPrank(user);
+token.approve(address(vault), amount);
+vault.depositToken(token, amount);
+vault.withdrawToken(token);
+vm.stopPrank();
+```
+
+注意：写了 `vm.startPrank()` 之后要记得 `vm.stopPrank()`，否则后面的外部调用还会继续用伪装的 `msg.sender`。
 
 ## vm.expectRevert
 
@@ -88,7 +116,7 @@ puppyRaffle.enterRaffle{value: entranceFee * 4}(players);
 
 这里的钱来自测试合约，也就是 `address(this)`。
 
-## {value: ...} 的资金来源
+## 资金来源
 
 谁发起这次调用，钱就从谁的余额里扣。
 
@@ -125,13 +153,15 @@ Attack contract address  +1 ETH
 - `makeAddr`: 造一个测试地址
 - `vm.deal`: 给某个地址设置 ETH 余额
 - `vm.prank`: 修改下一次调用的 `msg.sender`
+- `vm.startPrank`: 开始持续修改后续外部调用的 `msg.sender`
+- `vm.stopPrank`: 停止持续 prank，恢复正常调用者
 - `vm.expectRevert`: 期待下一次调用 revert
 - `address(this)`: 当前测试合约地址
 - `{value: ...}`: 谁调用，钱从谁那里扣
 
 ## 我的理解
 
-测试里最容易混的是“地址”和“合约余额”。`makeAddr` 只是造地址，`deal` 才是给余额，`prank` 只是换 `msg.sender`。
+测试里最容易混的是“地址”和“合约余额”。`makeAddr` 只是造地址，`deal` 才是给余额，`prank` / `startPrank` 只是换 `msg.sender`。
 
 `expectRevert` 是提前告诉 Foundry：下一次调用 revert 才是正确结果。
 
